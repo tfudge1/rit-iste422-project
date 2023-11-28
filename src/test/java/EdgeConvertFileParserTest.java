@@ -8,11 +8,9 @@ import static org.junit.Assert.*;
 import java.io.File;
 // import src.main.java.EdgeConnector;  
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class EdgeConvertFileParserTest {
