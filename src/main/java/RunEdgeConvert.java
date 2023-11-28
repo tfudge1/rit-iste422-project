@@ -6,6 +6,7 @@ public class RunEdgeConvert {
 
    public static void main(String[] args) {
       logger.info("Starting application {}", RunEdgeConvert.class);
+      @SuppressWarnings("unused")
       EdgeConvertGUI edge = new EdgeConvertGUI();
    }
 }
