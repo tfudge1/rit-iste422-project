@@ -16,6 +16,7 @@ public class EdgeConvertFileParser {
    private EdgeTable[] tables;
    private EdgeField[] fields;
    private EdgeConnector[] connectors;
+   public boolean testFailed = false;
    public static final String EDGE_ID = "EDGE Diagram File"; //first line of .edg files should be this
    public static final String SAVE_ID = "EdgeConvert Save File"; //first line of save files should be this
    public static final String DELIM = "|";
@@ -279,6 +280,10 @@ public class EdgeConvertFileParser {
    }
    
    public void openFile(File inputFile) {
+      openFile(inputFile, true);
+  }
+
+  public void openFile(File inputFile, boolean fatalError) {
       String currentLine = "";
       try {
          fr = new FileReader(inputFile);
@@ -296,17 +301,27 @@ public class EdgeConvertFileParser {
                br.close();
                this.makeArrays(); //convert ArrayList objects into arrays of the appropriate Class type
             } else { //the file chosen is something else
-               JOptionPane.showMessageDialog(null, "Unrecognized file format");
+               testFailed = true;
+               if (fatalError) {
+                  JOptionPane.showMessageDialog(null, "Unrecognized file format");
+              }
             }
          }
       } // try
       catch (FileNotFoundException fnfe) {
+         testFailed = true;
          logger.warn("Cannot find \"" + inputFile.getName() + "\".");
-         System.exit(0);
-      } // catch FileNotFoundException
-      catch (IOException ioe) {
+         if (fatalError) {
+            JOptionPane.showMessageDialog(null, "File Not Found");
+            //System.exit(0);
+         }
+     } // catch FileNotFoundException
+     catch (IOException ioe) {
          logger.error(ioe);
-         System.exit(0);
-      } // catch IOException
+         if (fatalError) {
+            JOptionPane.showMessageDialog(null, "Failure encountered while reading/writing");
+            //System.exit(0);
+         }
+     } // catch IOException
    } // openFile()
 } // EdgeConvertFileHandler
