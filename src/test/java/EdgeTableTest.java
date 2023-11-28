@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 
 import java.util.NoSuchElementException;
 
-import org.apache.logging.log4j.core.util.Assert;
-
 // import src.main.java.EdgeConnector;  
 
 import org.junit.Before;
