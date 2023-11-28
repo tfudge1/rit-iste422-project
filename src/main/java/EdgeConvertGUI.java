@@ -26,7 +26,6 @@ public class EdgeConvertGUI {
    private static ExampleFileFilter effEdge, effSave;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
-   private String sqlString;
    private String databaseName;
    EdgeMenuListener menuListener;
    EdgeRadioButtonListener radioListener;
@@ -1229,7 +1228,7 @@ public class EdgeConvertGUI {
             setOutputDir();
          }
          getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
-         sqlString = getSQLStatements();
+         String sqlString = getSQLStatements();
          if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
             return;
          }

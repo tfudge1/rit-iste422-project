@@ -9,7 +9,6 @@ public abstract class EdgeConvertCreateDDL {
    protected int[] numBoundTables;
    protected int maxBound;
    protected StringBuffer sb;
-   protected int selected;
    private static Logger logger = LogManager.getLogger(EdgeConvertCreateDDL.class);
    
    public EdgeConvertCreateDDL(EdgeTable[] tables, EdgeField[] fields) {
