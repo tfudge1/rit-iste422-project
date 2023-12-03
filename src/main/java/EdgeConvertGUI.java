@@ -33,7 +33,9 @@ public class EdgeConvertGUI {
    EdgeRadioButtonListener radioListener;
    EdgeWindowListener edgeWindowListener;
    CreateDDLButtonListener createDDLListener;
-   private EdgeConvertFileParser ecfp;
+   // private EdgeConvertFileParser ecfp;
+   private parseSaveFile psf;
+   private parseEdgeFile pef;
    private EdgeConvertCreateDDL eccd;
    private static PrintWriter pw;
    private EdgeTable[] tables; //master copy of EdgeTable objects
@@ -420,7 +422,7 @@ public class EdgeConvertGUI {
                            goodData = true;
                         }
                         catch (Exception e) {
-                           //TODO 
+
                         }
                         break;
                   }
@@ -1259,13 +1261,18 @@ public class EdgeConvertGUI {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                parseFile = jfcEdge.getSelectedFile();
-               ecfp = new EdgeConvertFileParser(parseFile);
-               tables = ecfp.getEdgeTables();
+               //TODO bc this is just edge files, just call child.
+               // ecfp = new EdgeConvertFileParser(parseFile);
+               pef = new parseEdgeFile(parseFile);
+               // tables = ecfp.getEdgeTables();
+               tables = pef.getEdgeTables();
                for (int i = 0; i < tables.length; i++) {
                   tables[i].makeArrays();
                }
-               fields = ecfp.getEdgeFields();
-               ecfp = null;
+               // fields = ecfp.getEdgeFields();
+               fields = pef.getEdgeFields();
+               pef = null;
+               // ecfp = null;
                populateLists();
                saveFile = null;
                jmiDTSave.setEnabled(false);
@@ -1298,10 +1305,30 @@ public class EdgeConvertGUI {
             returnVal = jfcEdge.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
-               ecfp = new EdgeConvertFileParser(saveFile);
-               tables = ecfp.getEdgeTables();
-               fields = ecfp.getEdgeFields();
-               ecfp = null;
+               //TODO bc this is a save file guarenteed, just call child 
+               // ecfp = new EdgeConvertFileParser(saveFile);
+               psf = new parseSaveFile(saveFile);
+
+               // tables = ecfp.getEdgeTables();
+               // fields = ecfp.getEdgeFields();
+               tables = psf.getEdgeTables();
+               fields = psf.getEdgeFields();
+               if(tables == null){
+                  System.out.println("error creating tables array");
+               }
+               if(fields == null){
+                  System.out.println("error creating fields array");
+               }
+               System.out.println("SAVE FILE ACTIONS PREFORMED");
+               
+               for(EdgeTable table: tables){
+                  System.out.println("TABLES: " + table);
+               }
+               for(EdgeField field: fields){
+                  System.out.println("TABLES: " + field);
+               }
+               psf = null;
+               // ecfp = null;
                populateLists();
                parseFile = null;
                jmiDTSave.setEnabled(true);
