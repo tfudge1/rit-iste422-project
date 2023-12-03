@@ -35,8 +35,8 @@ public class EdgeConvertFileParser {
       return fields;
    }
 
-   public void setEdgeFields(EdgeField[] _fields){
-      fields = _fields;
+   public void setEdgeFields(EdgeField[] _field){
+      fields = _field;
    }
 
    public void setEdgeTables(EdgeTable[] _tables){

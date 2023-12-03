@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.filechooser.FileFilter;
 import java.io.*;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -23,11 +22,10 @@ public class EdgeConvertGUI {
    public static final String DEFINE_TABLES = "Define Tables";
    public static final String DEFINE_RELATIONS = "Define Relations";
    public static final String CANCELLED = "CANCELLED";
-   private static JFileChooser jfcEdge, jfcGetClass, jfcOutputDir;
-   private static ExampleFileFilter effEdge, effSave, effClass;
+   private static JFileChooser jfcEdge, jfcOutputDir;
+   private static ExampleFileFilter effEdge, effSave;
    private File parseFile, saveFile, outputFile, outputDir, outputDirOld;
    private String truncatedFilename;
-   private String sqlString;
    private String databaseName;
    EdgeMenuListener menuListener;
    EdgeRadioButtonListener radioListener;
@@ -44,7 +42,7 @@ public class EdgeConvertGUI {
    private EdgeField currentDTField, currentDRField1, currentDRField2; //pointers to currently selected field(s) on Define Tables (DT) and Define Relations (DR) screens
    private static boolean readSuccess = true; //this tells GUI whether to populate JList components or not
    private boolean dataSaved = true;
-   private ArrayList alSubclasses, alProductNames;
+   private ArrayList<Object> alSubclasses, alProductNames;
    private String[] productNames;
    private Object[] objSubclasses;
 
@@ -59,8 +57,8 @@ public class EdgeConvertGUI {
    static JTextField jtfDTVarchar, jtfDTDefaultValue;
    static JLabel jlabDTTables, jlabDTFields;
    static JScrollPane jspDTTablesAll, jspDTFieldsTablesAll;
-   static JList jlDTTablesAll, jlDTFieldsTablesAll;
-   static DefaultListModel dlmDTTablesAll, dlmDTFieldsTablesAll;
+   static JList<Object> jlDTTablesAll, jlDTFieldsTablesAll;
+   static DefaultListModel<Object> dlmDTTablesAll, dlmDTFieldsTablesAll;
    static JMenuBar jmbDTMenuBar;
    static JMenu jmDTFile, jmDTOptions, jmDTHelp;
    static JMenuItem jmiDTOpenEdge, jmiDTOpenSave, jmiDTSave, jmiDTSaveAs, jmiDTExit, jmiDTOptionsOutputLocation, jmiDTOptionsShowProducts, jmiDTHelpAbout;
@@ -69,8 +67,8 @@ public class EdgeConvertGUI {
    static JFrame jfDR;
    static JPanel jpDRBottom, jpDRCenter, jpDRCenter1, jpDRCenter2, jpDRCenter3, jpDRCenter4;
    static JButton jbDRCreateDDL, jbDRDefineTables, jbDRBindRelation;
-   static JList jlDRTablesRelations, jlDRTablesRelatedTo, jlDRFieldsTablesRelations, jlDRFieldsTablesRelatedTo;
-   static DefaultListModel dlmDRTablesRelations, dlmDRTablesRelatedTo, dlmDRFieldsTablesRelations, dlmDRFieldsTablesRelatedTo;
+   static JList<Object> jlDRTablesRelations, jlDRTablesRelatedTo, jlDRFieldsTablesRelations, jlDRFieldsTablesRelatedTo;
+   static DefaultListModel<Object> dlmDRTablesRelations, dlmDRTablesRelatedTo, dlmDRFieldsTablesRelations, dlmDRFieldsTablesRelatedTo;
    static JLabel jlabDRTablesRelations, jlabDRTablesRelatedTo, jlabDRFieldsTablesRelations, jlabDRFieldsTablesRelatedTo;
    static JScrollPane jspDRTablesRelations, jspDRTablesRelatedTo, jspDRFieldsTablesRelations, jspDRFieldsTablesRelatedTo;
    static JMenuBar jmbDRMenuBar;
@@ -102,7 +100,6 @@ public class EdgeConvertGUI {
    public void createDTScreen() {//create Define Tables screen
       jfDT = new JFrame(DEFINE_TABLES);
       jfDT.setLocation(HORIZ_LOC, VERT_LOC);
-      Container cp = jfDT.getContentPane();
       jfDT.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       jfDT.addWindowListener(edgeWindowListener);
       jfDT.getContentPane().setLayout(new BorderLayout());
@@ -193,8 +190,8 @@ public class EdgeConvertGUI {
       
       jpDTCenter = new JPanel(new GridLayout(1, 3));
       jpDTCenterRight = new JPanel(new GridLayout(1, 2));
-      dlmDTTablesAll = new DefaultListModel();
-      jlDTTablesAll = new JList(dlmDTTablesAll);
+      dlmDTTablesAll = new DefaultListModel<Object>();
+      jlDTTablesAll = new JList<Object>(dlmDTTablesAll);
       jlDTTablesAll.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse)  {
@@ -218,8 +215,8 @@ public class EdgeConvertGUI {
          }
       );
       
-      dlmDTFieldsTablesAll = new DefaultListModel();
-      jlDTFieldsTablesAll = new JList(dlmDTFieldsTablesAll);
+      dlmDTFieldsTablesAll = new DefaultListModel<Object>();
+      jlDTFieldsTablesAll = new JList<Object>(dlmDTFieldsTablesAll);
       jlDTFieldsTablesAll.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse) {
@@ -400,7 +397,6 @@ public class EdgeConvertGUI {
                         break;
                      case 2: //Integer
                         try {
-                           int intResult = Integer.parseInt(result);
                            jtfDTDefaultValue.setText(result);
                            goodData = true;
                         } catch (NumberFormatException nfe) {
@@ -409,7 +405,6 @@ public class EdgeConvertGUI {
                         break;
                      case 3: //Double
                         try {
-                           double doubleResult = Double.parseDouble(result);
                            jtfDTDefaultValue.setText(result);
                            goodData = true;
                         } catch (NumberFormatException nfe) {
@@ -462,7 +457,6 @@ public class EdgeConvertGUI {
                   jtfDTVarchar.setText(prev);
                   return;
                }
-               int selIndex = jlDTFieldsTablesAll.getSelectedIndex();
                int varchar;
                try {
                   if (result.length() > 5) {
@@ -570,8 +564,8 @@ public class EdgeConvertGUI {
       jpDRCenter3 = new JPanel(new BorderLayout());
       jpDRCenter4 = new JPanel(new BorderLayout());
 
-      dlmDRTablesRelations = new DefaultListModel();
-      jlDRTablesRelations = new JList(dlmDRTablesRelations);
+      dlmDRTablesRelations = new DefaultListModel<Object>();
+      jlDRTablesRelations = new JList<Object>(dlmDRTablesRelations);
       jlDRTablesRelations.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse)  {
@@ -581,7 +575,7 @@ public class EdgeConvertGUI {
                if (selIndex >= 0) {
                   String selText = dlmDRTablesRelations.getElementAt(selIndex).toString();
                   setCurrentDRTable1(selText);
-                  int[] currentNativeFields, currentRelatedTables, currentRelatedFields;
+                  int[] currentNativeFields, currentRelatedTables;
                   currentNativeFields = currentDRTable1.getNativeFieldsArray();
                   currentRelatedTables = currentDRTable1.getRelatedTablesArray();
                   jlDRFieldsTablesRelations.clearSelection();
@@ -601,8 +595,8 @@ public class EdgeConvertGUI {
          }
       );
 
-      dlmDRFieldsTablesRelations = new DefaultListModel();
-      jlDRFieldsTablesRelations = new JList(dlmDRFieldsTablesRelations);
+      dlmDRFieldsTablesRelations = new DefaultListModel<Object>();
+      jlDRFieldsTablesRelations = new JList<Object>(dlmDRFieldsTablesRelations);
       jlDRFieldsTablesRelations.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse)  {
@@ -625,8 +619,8 @@ public class EdgeConvertGUI {
          }
       );
 
-      dlmDRTablesRelatedTo = new DefaultListModel();
-      jlDRTablesRelatedTo = new JList(dlmDRTablesRelatedTo);
+      dlmDRTablesRelatedTo = new DefaultListModel<Object>();
+      jlDRTablesRelatedTo = new JList<Object>(dlmDRTablesRelatedTo);
       jlDRTablesRelatedTo.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse)  {
@@ -646,8 +640,8 @@ public class EdgeConvertGUI {
          }
       );
 
-      dlmDRFieldsTablesRelatedTo = new DefaultListModel();
-      jlDRFieldsTablesRelatedTo = new JList(dlmDRFieldsTablesRelatedTo);
+      dlmDRFieldsTablesRelatedTo = new DefaultListModel<Object>();
+      jlDRFieldsTablesRelatedTo = new JList<Object>(dlmDRFieldsTablesRelatedTo);
       jlDRFieldsTablesRelatedTo.addListSelectionListener(
          new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent lse)  {
@@ -970,8 +964,8 @@ public class EdgeConvertGUI {
    private void setOutputDir() {
       int returnVal;
       outputDirOld = outputDir;
-      alSubclasses = new ArrayList();
-      alProductNames = new ArrayList();
+      alSubclasses = new ArrayList<Object>();
+      alProductNames = new ArrayList<Object>();
 
       returnVal = jfcOutputDir.showOpenDialog(null);
       
@@ -1011,10 +1005,10 @@ public class EdgeConvertGUI {
    
    private void getOutputClasses() {
       File[] resultFiles = {};
-      Class resultClass = null;
-      Class[] paramTypes = {EdgeTable[].class, EdgeField[].class};
-      Class[] paramTypesNull = {};
-      Constructor conResultClass;
+      Class<?> resultClass = null;
+      Class<?>[] paramTypes = {EdgeTable[].class, EdgeField[].class};
+      Class<?>[] paramTypesNull = {};
+      Constructor<?> conResultClass;
       Object[] args = {tables, fields};
       Object objOutput = null;
 	
@@ -1048,14 +1042,14 @@ public class EdgeConvertGUI {
             if (resultClass.getSuperclass().getName().equals("EdgeConvertCreateDDL")) { //only interested in classes that extend EdgeConvertCreateDDL
                if (parseFile == null && saveFile == null) {
                   conResultClass = resultClass.getConstructor(paramTypesNull);
-                  objOutput = conResultClass.newInstance(null);
+                  objOutput = conResultClass.newInstance((Object[]) null);
                   } else {
                   conResultClass = resultClass.getConstructor(paramTypes);
                   objOutput = conResultClass.newInstance(args);
                }
                alSubclasses.add(objOutput);
-               Method getProductName = resultClass.getMethod("getProductName", null);
-               String productName = (String)getProductName.invoke(objOutput, null);
+               Method getProductName = resultClass.getMethod("getProductName", (Class<?>[])null);
+               String productName = (String)getProductName.invoke(objOutput, (Object[]) null);
                alProductNames.add(productName);
             }
          }
@@ -1114,11 +1108,11 @@ public class EdgeConvertGUI {
       }
 
       try {
-         Class selectedSubclass = objSubclasses[selected].getClass();
-         Method getSQLString = selectedSubclass.getMethod("getSQLString", null);
-         Method getDatabaseName = selectedSubclass.getMethod("getDatabaseName", null);
-         strSQLString = (String)getSQLString.invoke(objSubclasses[selected], null);
-         databaseName = (String)getDatabaseName.invoke(objSubclasses[selected], null);
+         Class<?> selectedSubclass = objSubclasses[selected].getClass();
+         Method getSQLString = selectedSubclass.getMethod("getSQLString", new Class<?>[0]);
+         Method getDatabaseName = selectedSubclass.getMethod("getDatabaseName", new Class<?>[0]);
+         strSQLString = (String) getSQLString.invoke(objSubclasses[selected], (Object[]) null);
+         databaseName = (String) getDatabaseName.invoke(objSubclasses[selected], (Object[]) null);
       } catch (IllegalAccessException iae) {
          logger.error("unable to get SQL Statements: {}",iae);
          iae.printStackTrace();
@@ -1141,7 +1135,6 @@ public class EdgeConvertGUI {
 
    private void writeSQL(String output) {
       jfcEdge.resetChoosableFileFilters();
-      String str;
       if (parseFile != null) {
          outputFile = new File(parseFile.getAbsolutePath().substring(0, (parseFile.getAbsolutePath().lastIndexOf(File.separator) + 1)) + databaseName + ".sql");
       } else {
@@ -1238,7 +1231,7 @@ public class EdgeConvertGUI {
             setOutputDir();
          }
          getOutputClasses(); //in case outputDir was set before a file was loaded and EdgeTable/EdgeField objects created
-         sqlString = getSQLStatements();
+         String sqlString = getSQLStatements();
          if (sqlString.equals(EdgeConvertGUI.CANCELLED)) {
             return;
          }
