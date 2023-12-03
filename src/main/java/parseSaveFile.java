@@ -7,15 +7,11 @@ public class parseSaveFile extends EdgeConvertFileParser {
     private String tableName, fieldName, currentLine;
     private ArrayList<EdgeField> alFields;
     private ArrayList<EdgeTable> alTables;
-    private EdgeTable[] tables;
-    private EdgeField[] fields;
     //constructor idk
     public parseSaveFile(File inputFile) {
         super(inputFile);
         alTables = new ArrayList<>(); // Initialize the ArrayList for tables
         alFields = new ArrayList<>(); // Initialize the ArrayList for fields
-        tables = new EdgeTable[0]; // Initialize the tables array
-        fields = new EdgeField[0]; // Initialize the fields array
         try {
             br = new BufferedReader(new FileReader(inputFile));
             // br = new BufferedReader(fr);
