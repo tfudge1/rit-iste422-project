@@ -1265,6 +1265,13 @@ public class EdgeConvertGUI {
                // fields = ecfp.getEdgeFields();
                fields = pef.getEdgeFields();
                pef = null;
+               if(tables == null){
+                  System.out.println("error creating tables array");
+               }
+               if(fields == null){
+                  System.out.println("error creating fields array");
+               }
+               System.out.println("SAVE FILE ACTIONS PREFORMED");
                // ecfp = null;
                populateLists();
                saveFile = null;
@@ -1299,20 +1306,10 @@ public class EdgeConvertGUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                saveFile = jfcEdge.getSelectedFile();
                //TODO bc this is a save file guarenteed, just call child 
-               // ecfp = new EdgeConvertFileParser(saveFile);
                psf = new parseSaveFile(saveFile);
 
-               // tables = ecfp.getEdgeTables();
-               // fields = ecfp.getEdgeFields();
                tables = psf.getEdgeTables();
                fields = psf.getEdgeFields();
-               if(tables == null){
-                  System.out.println("error creating tables array");
-               }
-               if(fields == null){
-                  System.out.println("error creating fields array");
-               }
-               System.out.println("SAVE FILE ACTIONS PREFORMED");
                
                for(EdgeTable table: tables){
                   System.out.println("TABLES: " + table);

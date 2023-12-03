@@ -20,6 +20,21 @@ public class parseEdgeFile extends EdgeConvertFileParser {
     //constructor idk
     public parseEdgeFile(File inputFile){
         super(inputFile);
+        alTables = new ArrayList<>(); // Initialize the ArrayList for tables
+        alFields = new ArrayList<>(); // Initialize the ArrayList for fields
+        alConnectors = new ArrayList<>(); // Initialize the ArrayList for connector
+        try {
+            br = new BufferedReader(new FileReader(inputFile));
+            // br = new BufferedReader(fr);
+            //test for what kind of file we have
+            try {
+                currentLine = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(); // handle the exception according to your needs
+        }
         parseFile();
     }
     //getter for the important info
@@ -217,6 +232,7 @@ public class parseEdgeFile extends EdgeConvertFileParser {
          resolveConnectors();
         }catch(IOException ioe){
             //TODO
+            System.out.println(ioe);
         }
          /*
           * this.parseEdgeFile(); //parse the file
