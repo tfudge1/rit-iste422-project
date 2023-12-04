@@ -2,40 +2,19 @@ import java.io.*;
 import java.util.*;
 
 public class parseEdgeFile extends EdgeConvertFileParser { 
-    private BufferedReader br;
-    private int numFigure;
-    private String currentLine, style;
     private ArrayList<EdgeField> alFields;
     private ArrayList<EdgeTable> alTables;
     private ArrayList<EdgeConnector> alConnectors;
     private EdgeTable[] tables;
     private EdgeField[] fields;
     private EdgeConnector[] connectors;
-    private boolean isEntity, isAttribute, isUnderlined = false;
-    private String text;
-    private EdgeField tempField;
-    private int numConnector;
-    private int endPoint1, endPoint2;
-    private String endStyle1, endStyle2;
     //constructor idk
     public parseEdgeFile(File inputFile){
         super(inputFile);
         alTables = new ArrayList<>(); // Initialize the ArrayList for tables
         alFields = new ArrayList<>(); // Initialize the ArrayList for fields
         alConnectors = new ArrayList<>(); // Initialize the ArrayList for connector
-        try {
-            br = new BufferedReader(new FileReader(inputFile));
-            // br = new BufferedReader(fr);
-            //test for what kind of file we have
-            try {
-                currentLine = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace(); // handle the exception according to your needs
-        }
-        parseFile();
+        parseFile(inputFile);
     }
     //getter for the important info
     public EdgeTable[] getEdgeTables() {
@@ -135,18 +114,30 @@ public class parseEdgeFile extends EdgeConvertFileParser {
     } // resolveConnectors()
 
     //where the magic happens :)
-    public void parseFile(){ //this method is unclear and confusing in places
+    public void parseFile(File inputFile){ //this method is unclear and confusing in places
+        String currentLine = "";
+        boolean isEntity = false;
+        boolean isAttribute = false;
+        boolean isUnderlined = false;
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(inputFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(); // handle the exception according to your needs
+            //Should display error message
+            return;
+        }
         try{
         while ((currentLine = br.readLine()) != null) {
             currentLine = currentLine.trim();
             if (currentLine.startsWith("Figure ")) { //this is the start of a Figure entry
-               numFigure = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1)); //get the Figure number
+               int numFigure = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1)); //get the Figure number
                currentLine = br.readLine().trim(); // this should be "{"
                currentLine = br.readLine().trim();
                if (!currentLine.startsWith("Style")) { // this is to weed out other Figures, like Labels
                   continue;
                } else {
-                  style = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the Style parameter
+                  String style = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the Style parameter
                   if (style.startsWith("Relation")) { //presence of Relations implies lack of normalization
                     //TODO replace JOption Pane with some sort of feedback to user
                     //JOptionPane.showMessageDialog(null, "The Edge Diagrammer file\n" + parseFile + "\ncontains relations.  Please resolve them and try again.");
@@ -164,7 +155,7 @@ public class parseEdgeFile extends EdgeConvertFileParser {
                      continue;
                   }
                   currentLine = br.readLine().trim(); //this should be Text
-                  text = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")).replaceAll(" ", ""); //get the Text parameter
+                  String text = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")).replaceAll(" ", ""); //get the Text parameter
                   if (text.equals("")) {
                     //TODO replace JOption Pane with some sort of feedback to user
                     //JOptionPane.showMessageDialog(null, "There are entities or attributes with blank names in this diagram.\nPlease provide names for them and try again.");
@@ -193,7 +184,7 @@ public class parseEdgeFile extends EdgeConvertFileParser {
                      alTables.add(new EdgeTable(numFigure + DELIM + text));
                   }
                   if (isAttribute) { //create a new EdgeField object and add it to the alFields ArrayList
-                     tempField = new EdgeField(numFigure + DELIM + text);
+                     EdgeField tempField = new EdgeField(numFigure + DELIM + text);
                      tempField.setIsPrimaryKey(isUnderlined);
                      alFields.add(tempField);
                   }
@@ -204,21 +195,21 @@ public class parseEdgeFile extends EdgeConvertFileParser {
                }
             } // if("Figure")
             if (currentLine.startsWith("Connector ")) { //this is the start of a Connector entry
-               numConnector = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1)); //get the Connector number
+               int numConnector = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1)); //get the Connector number
                currentLine = br.readLine().trim(); // this should be "{"
                currentLine = br.readLine().trim(); // not interested in Style
                currentLine = br.readLine().trim(); // Figure1
-               endPoint1 = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1));
+               int endPoint1 = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1));
                currentLine = br.readLine().trim(); // Figure2
-               endPoint2 = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1));
+               int endPoint2 = Integer.parseInt(currentLine.substring(currentLine.indexOf(" ") + 1));
                currentLine = br.readLine().trim(); // not interested in EndPoint1
                currentLine = br.readLine().trim(); // not interested in EndPoint2
                currentLine = br.readLine().trim(); // not interested in SuppressEnd1
                currentLine = br.readLine().trim(); // not interested in SuppressEnd2
                currentLine = br.readLine().trim(); // End1
-               endStyle1 = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the End1 parameter
+               String endStyle1 = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the End1 parameter
                currentLine = br.readLine().trim(); // End2
-               endStyle2 = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the End2 parameter
+               String endStyle2 = currentLine.substring(currentLine.indexOf("\"") + 1, currentLine.lastIndexOf("\"")); //get the End2 parameter
    
                do { //advance to end of record
                   currentLine = br.readLine().trim();

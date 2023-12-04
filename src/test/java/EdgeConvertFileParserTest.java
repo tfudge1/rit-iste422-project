@@ -24,23 +24,24 @@ public class EdgeConvertFileParserTest {
     // "~/Desktop/code/422/classprojectGit/rit-iste422-project";
 
     public File testsave;
-    public EdgeConvertFileParser testObj;
+    public parseSaveFile testSaveObj;
+    public parseEdgeFile testEdgeObj;
     public File testsavenoheadding = new File(PROJECT_ROOT +"/src/test/resources/testsavenoheadding.sav");
     public File testsavemissingchar = new File(PROJECT_ROOT +"/src/test/resources/testsavemissingchar.sav");
 
     @Before
     public void xxxx(){
         testsave = new File(PROJECT_ROOT +"/src/test/resources/testsave.sav");
-        testObj = new EdgeConvertFileParser(testsave);
+        testSaveObj = new parseSaveFile(testsave);
         System.err.println(testsave);
     }
     //positive test: if provided a file: program finds and opens said file.
     @Test
     public void openFileTest(){
         // try{
-            assertNotNull(testObj);
+            assertNotNull(testSaveObj);
             // System.err.println(testsave);
-            testObj.openFile(testsave, false);
+            testSaveObj.parseFile(testsave);
             assertTrue(true);
         // }catch(Exception ex){
         //     fail("Unable to open file with error of:" + ex);
@@ -49,7 +50,7 @@ public class EdgeConvertFileParserTest {
     //positive test: when given a file program is able to create array of EdgeTables that match the file provided
     //@Test
     public void ableToGetEdgeTables(){
-        testObj.openFile(testsave, false);
+        testEdgeObj.parseFile(testsave);
         
         EdgeTable table1 = new EdgeTable("1|STUDENT");
         table1.addNativeField(7);
@@ -69,7 +70,7 @@ public class EdgeConvertFileParserTest {
         //table3.setRelatedField(0, 0);
 
         
-        EdgeTable[] ResTables = testObj.getEdgeTables();
+        EdgeTable[] ResTables = testEdgeObj.getEdgeTables();
         System.out.println("Results here v2");
         for(EdgeTable table: ResTables){
             System.out.println(table);
@@ -80,12 +81,12 @@ public class EdgeConvertFileParserTest {
 
         EdgeTable[] testEXedgeTables = {table1,table2,table3,table1,table2,table3};
 
-        assertArrayEquals(testEXedgeTables,testObj.getEdgeTables());
+        assertArrayEquals(testEXedgeTables,testEdgeObj.getEdgeTables());
     }
     //positive test: when given a file program is able to create array of EdgeFields that match the file provided
     @Test
     public void ableToGetEdgeFields(){
-        testObj.openFile(testsave, false);
+        testSaveObj.parseFile(testsave);
 
         EdgeField field1 = new EdgeField("3|Grade");
         field1.setTableID(13);
@@ -161,7 +162,7 @@ public class EdgeConvertFileParserTest {
         }
         String[] array2 = ExStrings.toArray(new String[ExStrings.size()]);
 
-        EdgeField[] TestResultEF = testObj.getEdgeFields();
+        EdgeField[] TestResultEF = testEdgeObj.getEdgeFields();
         ArrayList<String> ResultStrings = new ArrayList<String>();
         for(EdgeField field: TestResultEF){
             ResultStrings.add(field.toString());
@@ -174,21 +175,21 @@ public class EdgeConvertFileParserTest {
     @Test
     public void openFileWithBadPath(){
         final File testbadsave = new File("./resources/nonexistantfile.sav");
-        testObj.openFile(testbadsave, false);
-        assertTrue(testObj.testFailed);
+        testSaveObj.parseFile(testbadsave);
+        assertTrue(testSaveObj.testFailed);
     }
     //negative test: when provided a corupted save file with a missing headder program does not call parseEdgeFile() or parseSaveFile()
     @Test
     public void openFileWithNoHead(){
-        testObj.openFile(testsavenoheadding, false);
-        System.err.println("Testfailed is " + testObj.testFailed);
-        assertTrue(testObj.testFailed);
+        testSaveObj.parseFile(testsavenoheadding);
+        System.err.println("Testfailed is " + testSaveObj.testFailed);
+        assertTrue(testSaveObj.testFailed);
     }
     //negative test: when passed a file that is missing a character program is unable to create objects and throws NumberFormatException
     @Test(expected = NumberFormatException.class)
     public void parseSaveFileMissingChar(){
 //        fail("HERE");
-        testObj.openFile(testsavemissingchar, false);
+        testSaveObj.parseFile(testsavemissingchar);
         // EdgeField[] exampleArray = {};
         // assertArrayEquals(exampleArray,testObj.getEdgeFields());
         fail();
